@@ -1,5 +1,9 @@
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 import java.io.File;
@@ -20,7 +24,7 @@ public class Main {
         );
 
 
-        private static String lerArquivoComoString(String path) throws IOException {
+        private static String lerArquivoComPath(String path) throws IOException {
             FileInputStream fis = new FileInputStream(path);
             byte[] data = fis.readAllBytes();
             fis.close();
@@ -247,103 +251,35 @@ public class Main {
     }
 
     public static void ImprimeXMLSAT(){
+        if(conexaoAberta){
+            int ret = ImpressoraDLL.INSTANCE.ImprimeXMLSAT("path=C:\\Users\\Fellipe_guerra\\Downloads\\Java-Aluno Graduacao (1)\\Java-Aluno Graduacao\\XMLSAT.xml",0);
 
-        if(!conexaoAberta){
-            System.out.println("Impressora não esta conectada");
-            System.out.println("Volte na opção 2 e abra a conexão corretamente");
-            return;
-        }
-        try{
-            System.out.println("\n=== IMPRESÂO DE XML SAT ===");
-
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Selecione o arquivo XML SAT");
-            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Arquivos XML", "xml"));
-
-            int resultado = fileChooser.showOpenDialog(null);
-
-            if (resultado == JFileChooser.APPROVE_OPTION){
-                File arquivo = fileChooser.getSelectedFile();
-                System.out.println("Arquivo selecionado: " + arquivo.getName());
-
-                String conteudoXML = lerArquivoComoString(arquivo.getAbsolutePath());
-
-                if (conteudoXML.isEmpty()){
-                    System.out.println("Arquivo vazio");
-                    return;
-                }
-
-                System.out.print("Digite o parametro de impressão");
-                parametro = scanner.nextInt();
-                scanner.nextLine();
-
-                System.out.println("Enviado arquivo para impressora...");
-                int rest = ImpressoraDLL.INSTANCE.ImprimeXMLSAT(conteudoXML,parametro);
-
-                if(rest == 0 ){
-                    System.out.println("XML SAT impresso com sucesso.");
-                }
-                else{
-                    System.out.println("Falha na impressão do arquivo " + rest);
-                }
+            if(ret == 0){
+                System.out.println("Impressao OK");
+            }else {
+                System.out.println("Erro. Retorno "+ ret);
             }
+        }else{
+            System.out.println("Abra a conexao primeiro");
         }
-        catch (Exception e){
-            System.out.println("Erro na impressão XML: " + e.getMessage());
-            scanner.nextLine();
-        }
+
     }
 
     public static void ImprimeXMLCancelamentoSAT(){
+        if(conexaoAberta){
 
-        if (!conexaoAberta){
-            System.out.println("Impressora não esta conectada");
-            System.out.println("Volte na opção 2 e abra a conexão corretamente");
-            return;
-        }
-        try {
-            System.out.println("\n=== IMPRESSÂO DE XML DE CANCELAMENTO SAT ===");
+            String assQRCode = "Q5DLkpdRijIRGY6YSSNsTWK1TztHL1vD0V1Jc4spo/CEUqICEb9SFy82ym8EhBRZjbh3btsZhF+sjHqEMR159i4agru9x6KsepK/q0E2e5xlU5cv3m1woYfgHyOkWDNcSdMsS6bBh2Bpq6s89yJ9Q6qh/J8YHi306ce9Tqb/drKvN2XdE5noRSS32TAWuaQEVd7u+TrvXlOQsE3fHR1D5f1saUwQLPSdIv01NF6Ny7jZwjCwv1uNDgGZONJdlTJ6p0ccqnZvuE70aHOI09elpjEO6Cd+orI7XHHrFCwhFhAcbalc+ZfO5b/+vkyAHS6CYVFCDtYR9Hi5qgdk31v23w==";
+            int ret = ImpressoraDLL.INSTANCE.ImprimeXMLCancelamentoSAT("path=C:\\Users\\Fellipe_guerra\\Downloads\\Java-Aluno Graduacao (1)\\Java-Aluno Graduacao\\CANC_SAT.xml", assQRCode,0);
 
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Selecione o arquivo de Cancelamento");
-            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Arquivos XML", "xml"));
-
-            int resultado = fileChooser.showOpenDialog(null);
-
-            if(resultado == JFileChooser.APPROVE_OPTION){
-                File arquivo = fileChooser.getSelectedFile();
-                System.out.println("Arquivo selecionado: " + arquivo.getName());
-
-                String conteudoXML = lerArquivoComoString(arquivo.getAbsolutePath());
-
-                if(conteudoXML.isEmpty()){
-                    System.out.println("Arquivo XML vazio");
-                    return;
-                }
-                String assQRCode = ("Q5DLkpdRijIRGY6YSSNsTWK1TztHL1vD0V1Jc4spo/CEUqICEb9SFy82ym8EhBRZjbh3btsZhF+sjHqEMR159i4agru9x6KsepK/q0E2e5xlU5cv3m1woYfgHyOkWDNcSdMsS6bBh2Bpq6s89yJ9Q6qh/J8YHi306ce9Tqb/drKvN2XdE5noRSS32TAWuaQEVd7u+TrvXlOQsE3fHR1D5f1saUwQLPSdIv01NF6Ny7jZwjCwv1uNDgGZONJdlTJ6p0ccqnZvuE70aHOI09elpjEO6Cd+orI7XHHrFCwhFhAcbalc+ZfO5b/+vkyAHS6CYVFCDtYR9Hi5qgdk31v23w==");
-
-                System.out.println("Digite o parametro da Impressão: ");
-                parametro = scanner.nextInt();
-
-                System.out.println("Enviado o XML de cancelamento para impressão...");
-
-                int rest = ImpressoraDLL.INSTANCE.ImprimeXMLCancelamentoSAT(conteudoXML, assQRCode,parametro);
-
-                if (rest == 0){
-                    System.out.println("XML de cancelamento impresso com sucesso");
-                }
-                else{
-                    System.out.println("Falha na impressão do arquivo " + rest);
-
-                }
+            if(ret == 0){
+                System.out.println("Impressao OK");
+            }else {
+                System.out.println("Erro. Retorno "+ ret);
             }
-            else{
-                System.out.println("Seleção de arquivo cancelada. ");
-            }
+        }else{
+            System.out.println("Abra a conexao primeiro");
         }
-        catch (Exception e){
-            System.out.println("Erro na impressao do XML de cancelamento: " + e.getMessage());
-        }
+
     }
 
     public static void SinalSonoro(){
@@ -405,7 +341,6 @@ public class Main {
                     configurarConexao();
                     break;
                 case "2":
-                    ImpressoraDLL.INSTANCE.StatusImpressora(scanner.nextInt());
                     abrirConexao();
                     break;
                 case "3":
@@ -428,15 +363,12 @@ public class Main {
                     break;
                 case "6":
                     ImpressoraDLL.INSTANCE.LimpaBufferModoPagina();
-                    ImpressoraDLL.INSTANCE.ModoPagina();
-                    ImpressoraDLL.INSTANCE.ModoPadrao();
                     ImprimeXMLSAT();
                     ImpressoraDLL.INSTANCE.AvancaPapel(2);
                     ImpressoraDLL.INSTANCE.Corte(5);
                     break;
                 case "7":
                     ImpressoraDLL.INSTANCE.LimpaBufferModoPagina();
-                    ImpressoraDLL.INSTANCE.ModoPagina();
                     ImprimeXMLCancelamentoSAT();
                     ImpressoraDLL.INSTANCE.AvancaPapel(2);
                     ImpressoraDLL.INSTANCE.Corte(5);
